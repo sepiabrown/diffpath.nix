@@ -150,7 +150,13 @@
       });
 
       # Make hello runnable with `nix run`
-      apps.x86_64-linux = {
+      apps.x86_64-linux =
+        let
+          REMOTE_HOST="2.0.0.12";
+          REMOTE_PORT="18888";
+          LOCAL_PORT="18888";
+        in
+      {
         default = self.apps.x86_64-linux.single-gpu;
         train = {
           type = "app";
@@ -228,6 +234,28 @@
             '';
             inheritPath = true;
           }}/bin/save-test-statistics";
+        };
+        jupyter = {
+          type = "app";
+          program = "${pkgs.writeShellApplication {
+            name = "start-jupyter";
+            runtimeInputs = [ self.packages.x86_64-linux.default ];
+            text = ''
+              exec jupyter lab --port=${REMOTE_PORT} "$@"
+            '';
+            inheritPath = true;
+          }}/bin/start-jupyter";
+        };
+        port-forward = {
+          type = "app";
+          program = "${pkgs.writeShellApplication {
+            name = "port-forward";
+            runtimeInputs = [ self.packages.x86_64-linux.default ];
+            text = ''
+              ssh -N -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} ${REMOTE_HOST}
+            '';
+            inheritPath = true;
+          }}/bin/port-forward";
         };
       };
 

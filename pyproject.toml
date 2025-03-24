@@ -54,6 +54,8 @@ dependencies = [
     "hatchling",
     "libcst",
     "wandb",
+    "ipykernel",
+    "jupyter",
 ]
 
 [project.scripts]
@@ -67,7 +69,8 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.6.7",
+    "jupyter",
+    "ipykernel",
 ]
 
 [tool.hatch.build.targets.wheel]
